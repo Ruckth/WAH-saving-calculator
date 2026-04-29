@@ -20,6 +20,8 @@ This app is deployed from `savings-vision/` using Bun and Wrangler.
 - Worker name must match `wah-saving-calculator`
 - Static assets are deployed from `dist/`
 - SPA routing is enabled with `assets.not_found_handling = "single-page-application"`
+- `public/_redirects` is intentionally not used for Workers deploys because Wrangler validates redirects separately and the SPA fallback already lives in `wrangler.jsonc`
+- The build script clears `dist/` first so stale files from older deploy strategies cannot be uploaded accidentally
 
 ## Local checks
 
