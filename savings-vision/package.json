@@ -11,7 +11,8 @@
     "dev": "bunx --bun vite",
     "build": "bunx tsc -b && bunx --bun vite build",
     "lint": "bunx --bun eslint .",
-    "preview": "bunx --bun vite preview"
+    "preview": "bunx --bun vite preview",
+    "deploy": "bunx wrangler deploy"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
@@ -20,6 +21,7 @@
     "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.34.0",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
@@ -31,6 +33,7 @@
     "globals": "^17.5.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "wrangler": "^4.86.0"
   }
 }

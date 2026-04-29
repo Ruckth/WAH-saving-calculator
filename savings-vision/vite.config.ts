@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { cloudflare } from '@cloudflare/vite-plugin'
 
 // https://vite.dev/config/
 //
@@ -12,6 +13,6 @@ import tailwindcss from '@tailwindcss/vite'
 //   VITE_BASE_PATH=/<repo-name>/ bun run build
 // or set it as a repo-level Variable in GitHub Settings → Secrets and variables.
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), cloudflare()],
   base: process.env.VITE_BASE_PATH ?? '/',
 })

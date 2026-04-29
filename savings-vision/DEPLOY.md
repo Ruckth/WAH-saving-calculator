@@ -48,6 +48,24 @@ This project now uses **Bun as the package manager**, and the scripts are writte
 that `bun run build` executes Vite under Bun's runtime. If you intentionally run Vite
 through Node instead, use **Node 20.19.0+** or **22.12.0+** because Vite 8 requires it.
 
+## Option A2 — Cloudflare Workers Builds
+
+This repo is now wired for Workers too, using Cloudflare's Vite plugin and a
+checked-in `wrangler.jsonc`.
+
+Use these settings in the **Workers** import flow:
+
+1. **Path**: `/savings-vision`
+2. **Build command**: `bun run build`
+3. **Deploy command**: `bunx wrangler deploy`
+4. **Build variable**: `BUN_VERSION=1.3.4`
+
+Notes:
+- The Worker config lives at `savings-vision/wrangler.jsonc`
+- Built assets are deployed from `savings-vision/dist`
+- SPA routing is enabled via `assets.not_found_handling = "single-page-application"`
+- The Worker name is set to `wah-saving-calculator` and must match the dashboard Worker name before deploying
+
 ### Custom domain (optional, ~10 min)
 
 1. Buy a short domain (suggested: `wahsavings.com`, `wah-thai.com`, or punycode of `ฝันเก็บเงิน`)
