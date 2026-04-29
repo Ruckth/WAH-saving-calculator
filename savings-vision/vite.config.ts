@@ -9,7 +9,7 @@ import tailwindcss from '@tailwindcss/vite'
 //   • GitHub Pages on a project URL (subpath: '/<repo-name>/')
 //
 // Default '/' works for all root-served hosts. For GitHub Pages set
-//   VITE_BASE_PATH=/<repo-name>/ npm run build
+//   VITE_BASE_PATH=/<repo-name>/ bun run build
 // or set it as a repo-level Variable in GitHub Settings → Secrets and variables.
 export default defineConfig({
   plugins: [react(), tailwindcss()],

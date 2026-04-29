@@ -24,11 +24,29 @@ Both auto-deploy on every push to `main`. Both give free HTTPS + custom domains.
 2. **Workers & Pages → Create → Connect to Git → GitHub → authorize → select your repo**
 3. Configure build:
    - **Framework preset**: Vite
-   - **Build command**: `npm install --prefix savings-vision && npm --prefix savings-vision run build`
+   - **Root directory**: `savings-vision` (preferred for this repo layout)
+   - **Build command**: `bun run build`
+   - **Build output directory**: `dist`
+   - **Environment variables**: `BUN_VERSION=1.3.4`
+4. If you do **not** set a root directory, use:
+   - **Build command**: `bun install --cwd savings-vision && bun --cwd savings-vision run build`
    - **Build output directory**: `savings-vision/dist`
-   - **Environment variables**: `NODE_VERSION=20`
-4. Click **Save and Deploy**. First deploy ~90s.
-5. You get a URL like `<project>.pages.dev`.
+   - **Environment variables**: `BUN_VERSION=1.3.4`
+5. Click **Save and Deploy**. First deploy ~90s.
+6. You get a URL like `<project>.pages.dev`.
+
+### Important: Pages vs Workers
+
+This repo is a **static Vite SPA**, not a Worker-first app. If Cloudflare shows a
+screen asking for a **deploy command** like `npx wrangler deploy`, you are in the
+**Workers Builds** flow. That can work only after adding Wrangler config, but it is
+unnecessary here. Prefer **Pages** for the simplest setup.
+
+### Important: Bun + Node
+
+This project now uses **Bun as the package manager**, and the scripts are written so
+that `bun run build` executes Vite under Bun's runtime. If you intentionally run Vite
+through Node instead, use **Node 20.19.0+** or **22.12.0+** because Vite 8 requires it.
 
 ### Custom domain (optional, ~10 min)
 
@@ -53,7 +71,8 @@ Use this to validate changes against real production data before merging.
    - Value: `/<your-repo-name>/` (e.g. `/savings-vision/`) — only needed if your
      site lives at `https://<user>.github.io/<repo>/`. Skip this step if you
      have a custom domain or a `<user>.github.io` root site.
-3. Push to `main`. Workflow runs in ~60s. Site live at:
+3. If you want GitHub Actions to use Bun too, update the workflow to install Bun before building.
+4. Push to `main`. Workflow runs in ~60s. Site live at:
    ```
    https://<your-username>.github.io/<repo-name>/
    ```
@@ -95,9 +114,9 @@ For a custom domain:
 ### Quarterly (~30 min)
 ```bash
 cd savings-vision
-npm outdated
-npm update          # patch updates only — safe
-npm run build       # verify nothing broke
+bun outdated
+bun update          # patch/minor updates within ranges in bun.lock/package.json
+bun run build       # verify nothing broke
 git push            # ship
 ```
 
@@ -133,10 +152,10 @@ Each edit → push → preview-deploys for review → merge → live in ~60s.
 
 ```bash
 cd savings-vision
-npm install
-npm run dev          # http://localhost:5173 with HMR
-npm run build        # production build → dist/
-npm run preview      # serve the production build locally
+bun install
+bun run dev          # http://localhost:5173 with HMR
+bun run build        # production build → dist/
+bun run preview      # serve the production build locally
 ```
 
 Test the production-equivalent build locally before pushing major changes.
