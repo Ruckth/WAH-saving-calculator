@@ -43,8 +43,10 @@ export const SUPER_GUARANTEE_RATE = 0.12;
 export const DASP_TAX_RATE_WHM = 0.65;
 
 export type CalcInput = {
-  hourlyWage: number;
-  hoursPerWeek: number;
+  hourlyWage?: number;
+  hoursPerWeek?: number;
+  jobs?: { hourlyWage: number; hoursPerWeek: number }[];
+  workWeeksPerYear: number;
   /** Weekly expenses in AUD (Australian convention — rent quoted per week). */
   weeklyExpenses: number;
   goalAmount: number;
@@ -129,25 +131,35 @@ function computeTaxBreakdown(annualGross: number): TaxBreakdown {
 }
 
 export function calculate(input: CalcInput): CalcResult {
+  const workWeeksPerYear = Math.min(52, Math.max(1, input.workWeeksPerYear));
+  const jobs = input.jobs?.length
+    ? input.jobs
+    : [{ hourlyWage: input.hourlyWage ?? 0, hoursPerWeek: input.hoursPerWeek ?? 0 }];
   // Weekly figures (primary)
-  const weeklyGrossIncome = input.hourlyWage * input.hoursPerWeek;
+  const weeklyGrossIncome = jobs.reduce(
+    (sum, job) => sum + Math.max(0, job.hourlyWage) * Math.max(0, job.hoursPerWeek),
+    0,
+  );
   const weeklyExpenses = Math.max(0, input.weeklyExpenses);
 
-  // Monthly + annual derived from weekly
-  const monthlyGrossIncome = weeklyGrossIncome * WEEKS_PER_MONTH;
-  const annualGrossIncome = weeklyGrossIncome * 52;
+  // Monthly + annual derived from actual worked weeks per year. Expenses still
+  // apply across calendar weeks, even during breaks / travel / job-hunting.
+  const annualGrossIncome = weeklyGrossIncome * workWeeksPerYear;
   const taxBreakdown = computeTaxBreakdown(annualGrossIncome);
-  const monthlyTax = taxBreakdown.totalAnnualTax / 12;
-  const weeklyTax = taxBreakdown.totalAnnualTax / 52;
-  const monthlyNetIncome = monthlyGrossIncome - monthlyTax;
+  const weeklyTax = taxBreakdown.totalAnnualTax / workWeeksPerYear;
   const weeklyNetIncome = weeklyGrossIncome - weeklyTax;
-  const monthlyExpenses = weeklyExpenses * WEEKS_PER_MONTH;
-  const monthlySavings = monthlyNetIncome - monthlyExpenses;
+  const annualNetIncome = annualGrossIncome - taxBreakdown.totalAnnualTax;
+  const annualExpenses = weeklyExpenses * 52;
+  const monthlyGrossIncome = annualGrossIncome / 12;
+  const monthlyTax = taxBreakdown.totalAnnualTax / 12;
+  const monthlyNetIncome = annualNetIncome / 12;
+  const monthlyExpenses = annualExpenses / 12;
+  const monthlySavings = (annualNetIncome - annualExpenses) / 12;
   const weeklySavings = weeklyNetIncome - weeklyExpenses;
 
   // Super accrued by employer (on top of wages, not from take-home).
   const annualSuperAccrued = annualGrossIncome * SUPER_GUARANTEE_RATE;
-  const weeklySuperAccrued = annualSuperAccrued / 52;
+  const weeklySuperAccrued = annualSuperAccrued / workWeeksPerYear;
   // DASP — claimable on departure, but taxed at 65% for WHMs.
   const daspTaxOnDeparture = annualSuperAccrued * DASP_TAX_RATE_WHM;
   const daspNetOnDeparture = annualSuperAccrued - daspTaxOnDeparture;
@@ -171,10 +183,10 @@ export function calculate(input: CalcInput): CalcResult {
     daspTaxOnDeparture,
   };
 
-  if (weeklySavings <= 0 || input.goalAmount <= 0) {
+  if (monthlySavings <= 0 || input.goalAmount <= 0) {
     return {
       ...baseFields,
-      reachable: weeklySavings > 0,
+      reachable: monthlySavings > 0,
       monthsTotal: 0,
       years: 0,
       months: 0,

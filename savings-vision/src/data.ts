@@ -127,12 +127,13 @@ export const LIFESTYLE_TIERS: LifestyleTier[] = [
   },
 ];
 
-// 12 hours × 7 days = 84 — the realistic WAH grind ceiling.
+// 16 hours × 7 days = 112 — absolute planning ceiling before blocking input.
 // Note: subclass 462 caps you at 6 months with the same employer.
 export const HOURS_MIN = 10;
-export const HOURS_MAX = 84;
+export const HOURS_MAX = 112;
 export const HOURS_STEP = 1;
 export const HOURS_DEFAULT = 40;
+export const WORK_WEEKS_PER_YEAR_DEFAULT = 48;
 
 // AUD 10,000 ≈ a year of solid WAH savings — meaningful but achievable.
 export const GOAL_DEFAULT = 10000;
