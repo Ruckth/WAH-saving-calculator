@@ -1351,28 +1351,30 @@ function SuperDaspPanel({
         {t(lang, 'super_explainer')}
       </p>
 
-      {/* Equation: Super  −  DASP tax  =  Take home. Right-aligned tabular
-          numbers, every value forced to a single line. */}
-      <dl className="mt-3 space-y-2 text-xs">
-        <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
-          <dt className="text-stone-600">{t(lang, 'super_accrued_label')}</dt>
-          <dd className="whitespace-nowrap font-semibold tabular text-stone-800">
-            +{formatMoney(annualSuper, lang)} {t(lang, 'baht')}
-          </dd>
-        </div>
-        <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
-          <dt className="text-stone-500">{t(lang, 'dasp_tax_label')}</dt>
-          <dd className="whitespace-nowrap tabular text-stone-500">
-            −{formatMoney(daspTax, lang)} {t(lang, 'baht')}
-          </dd>
-        </div>
-        <div className="flex flex-col gap-0.5 border-t border-sky-200 pt-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
-          <dt className="text-sm font-semibold text-stone-700">{t(lang, 'dasp_net_label')}</dt>
-          <dd className="whitespace-nowrap text-base font-bold tabular text-sky-700">
-            {formatMoney(daspNet, lang)} {t(lang, 'baht')}
-          </dd>
-        </div>
-      </dl>
+      <div className="mt-3 rounded-lg border border-sky-100 bg-white/70 p-3">
+        <dl className="space-y-2 text-xs">
+          <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+            <dt className="text-stone-600">{t(lang, 'super_accrued_label')}</dt>
+            <dd className="whitespace-nowrap font-semibold tabular text-stone-800">
+              {formatMoney(annualSuper, lang)} {t(lang, 'baht')}
+            </dd>
+          </div>
+          <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+            <dt className="text-stone-500">- {t(lang, 'dasp_tax_label')}</dt>
+            <dd className="whitespace-nowrap tabular text-stone-500">
+              {formatMoney(daspTax, lang)} {t(lang, 'baht')}
+            </dd>
+          </div>
+          <div className="border-t border-dashed border-sky-200 pt-2">
+            <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
+              <dt className="text-sm font-semibold text-stone-700">{t(lang, 'dasp_net_label')}</dt>
+              <dd className="whitespace-nowrap text-base font-bold tabular text-sky-700">
+                {formatMoney(daspNet, lang)} {t(lang, 'baht')}
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
       <p className="mt-1.5 text-right text-[10px] text-stone-400 tabular">
         ≈ {formatMoney(weeklySuper, lang)} {t(lang, 'baht')} {t(lang, 'super_per_week')}
       </p>
