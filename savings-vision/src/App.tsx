@@ -232,7 +232,7 @@ export default function App() {
     <div className="min-h-screen bg-stone-50 text-stone-900">
       <Header lang={lang} onToggleLang={() => setLang(lang === 'th' ? 'en' : 'th')} />
 
-      <main className="mx-auto max-w-2xl px-4 pb-20 pt-2 space-y-4">
+      <main className="mx-auto max-w-2xl space-y-3 px-3 pb-16 pt-2 sm:space-y-4 sm:px-4 sm:pb-20">
         {!scamBannerDismissed && (
           <ScamWarning lang={lang} onDismiss={() => setScamBannerDismissed(true)} />
         )}
@@ -257,22 +257,22 @@ export default function App() {
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-stone-500">
               {t(lang, 'section_experience')}
             </p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
               {EXPERIENCE_LEVELS.map((opt) => (
                 <button
                   key={opt.id}
                   onClick={() => pickExperience(opt.id)}
                   aria-pressed={opt.id === experienceLevel}
                   className={
-                    'flex flex-col items-center justify-center rounded-xl border px-2 py-2.5 text-sm transition ' +
+                    'flex min-h-[72px] flex-col items-center justify-center rounded-xl border px-1.5 py-2 text-xs transition sm:min-h-[92px] sm:px-2 sm:py-2.5 sm:text-sm ' +
                     (opt.id === experienceLevel
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold'
                       : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300')
                   }
                 >
-                  <span className="text-xl mb-0.5" aria-hidden="true">{opt.emoji}</span>
-                  <span className="text-xs">{lang === 'th' ? opt.th : opt.en}</span>
-                  <span className="text-[10px] text-stone-400 font-normal">
+                  <span className="mb-0.5 text-lg sm:text-xl" aria-hidden="true">{opt.emoji}</span>
+                  <span className="text-[11px] leading-tight sm:text-xs">{lang === 'th' ? opt.th : opt.en}</span>
+                  <span className="text-[9px] text-stone-400 font-normal sm:text-[10px]">
                     {t(lang, `experience_${opt.id === 'first_timer' ? 'first_timer' : opt.id === 'some_experience' ? 'some' : 'established'}_hint` as 'experience_first_timer_hint')}
                   </span>
                 </button>
@@ -363,29 +363,29 @@ export default function App() {
         {/* LIFESTYLE */}
         <Card>
           <SectionLabel text={t(lang, 'section_lifestyle')} />
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
             {LIFESTYLE_TIERS.map((opt) => (
               <button
                 key={opt.id}
                 onClick={() => pickLifestyle(opt.id)}
                 className={
-                  'flex flex-col items-center justify-center rounded-xl border px-2 py-3 text-sm transition ' +
+                  'flex min-h-[88px] flex-col items-center justify-center rounded-xl border px-2 py-2 text-xs transition sm:min-h-[104px] sm:px-2 sm:py-3 sm:text-sm ' +
                   (opt.id === lifestyleId
                     ? 'border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold'
                     : 'border-stone-200 bg-white text-stone-600 hover:border-stone-300')
                 }
                 aria-pressed={opt.id === lifestyleId}
               >
-                <span className="text-2xl mb-1" aria-hidden="true">{opt.emoji}</span>
-                <span>{lang === 'th' ? opt.th : opt.en}</span>
+                <span className="mb-1 text-xl sm:text-2xl" aria-hidden="true">{opt.emoji}</span>
+                <span className="text-[11px] leading-tight sm:text-sm">{lang === 'th' ? opt.th : opt.en}</span>
               </button>
             ))}
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3">
             {(['rent', 'food', 'transport', 'other'] as ExpenseCategory[]).map((cat) => (
               <div key={cat}>
-                <label className="block text-xs text-stone-500 mb-1.5">
+                <label className="mb-1 block text-[11px] text-stone-500 sm:mb-1.5 sm:text-xs">
                   {t(lang, `expense_${cat}` as 'expense_rent')}
                 </label>
                 <MoneyInput
@@ -394,20 +394,26 @@ export default function App() {
                   lang={lang}
                   ariaLabel={t(lang, `expense_${cat}` as 'expense_rent')}
                   suffix={t(lang, 'baht')}
+                  size="sm"
                 />
               </div>
             ))}
           </div>
 
-          <div className="mt-3 flex items-baseline justify-between border-t border-stone-100 pt-3">
+          <div className="mt-3 border-t border-stone-100 pt-3">
             <span className="text-sm text-stone-500">{t(lang, 'expense_total')}</span>
-            <span className="text-right">
-              <span className="text-lg font-semibold tabular text-stone-700">
+            <span className="mt-1.5 block text-left sm:mt-0 sm:text-right">
+              <span className="text-base font-semibold tabular text-stone-700 sm:text-lg">
                 {formatMoney(totalExpenses, lang)}{' '}
                 <span className="text-xs font-normal text-stone-500">{t(lang, 'baht_per_week')}</span>
               </span>
-              <span className="block text-[11px] text-stone-400 tabular">
-                ≈ {formatMoney(totalExpenses * (52 / 12), lang)} {t(lang, 'baht_per_month')}
+              <span className="mt-1 block text-[11px] leading-relaxed text-stone-400 tabular">
+                <span className="block sm:inline">
+                  ≈ {formatMoney(totalExpenses * (52 / 12), lang)} {t(lang, 'baht_per_month')}
+                </span>
+                <span className="block sm:ml-1 sm:inline">
+                  ≈ {formatMoney(totalExpenses * (52 / 12) * safeRate, lang)} {t(lang, 'thb')} / {lang === 'th' ? 'เดือน' : 'mo'}
+                </span>
               </span>
             </span>
           </div>
@@ -434,6 +440,7 @@ export default function App() {
             ariaLabel={t(lang, 'section_remittance')}
             suffix={remittanceCurrency === 'AUD' ? t(lang, 'baht') : t(lang, 'thb')}
             placeholder="0"
+            size="sm"
           />
           {/* Equivalent in the other currency (only show when there's a value) */}
           {weeklyRemittance > 0 && (
@@ -493,7 +500,7 @@ export default function App() {
                   setThbPerAud(Math.max(0, Number(e.target.value) || 0));
                   setRateMeta({ source: 'manual' });
                 }}
-                className="w-20 rounded-md border border-stone-200 bg-white px-2 py-1 text-right text-sm font-semibold tabular text-stone-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                className="w-18 rounded-md border border-stone-200 bg-white px-2 py-1 text-right text-xs font-semibold tabular text-stone-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 sm:w-20 sm:text-sm"
                 aria-label={t(lang, 'exchange_rate_label')}
               />
               <span className="text-xs text-stone-500 whitespace-nowrap">{t(lang, 'thb')}</span>
@@ -572,11 +579,11 @@ function StartDatePicker({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1.5 sm:gap-2">
       <select
         value={month}
         onChange={(e) => setMonthYear(Number(e.target.value), year)}
-        className="flex-1 rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-base font-semibold text-stone-900 hover:border-stone-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 cursor-pointer"
+        className="flex-1 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-semibold text-stone-900 hover:border-stone-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 cursor-pointer sm:py-2.5 sm:text-base"
         aria-label={lang === 'th' ? 'เดือน' : 'Month'}
       >
         {monthNames.map((name, i) => (
@@ -586,7 +593,7 @@ function StartDatePicker({
       <select
         value={year}
         onChange={(e) => setMonthYear(month, Number(e.target.value))}
-        className="rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-base font-semibold tabular text-stone-900 hover:border-stone-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 cursor-pointer"
+        className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-semibold tabular text-stone-900 hover:border-stone-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 cursor-pointer sm:py-2.5 sm:text-base"
         aria-label={lang === 'th' ? 'ปี' : 'Year'}
       >
         {years.map((y) => (
@@ -599,7 +606,7 @@ function StartDatePicker({
         <button
           type="button"
           onClick={() => setMonthYear(now.getMonth(), now.getFullYear())}
-          className="rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-xs font-medium text-stone-600 hover:border-stone-300 transition whitespace-nowrap"
+          className="rounded-lg border border-stone-200 bg-white px-2.5 py-2 text-[11px] font-medium text-stone-600 hover:border-stone-300 transition whitespace-nowrap sm:px-3 sm:py-2.5 sm:text-xs"
         >
           {t(lang, 'start_date_reset')}
         </button>
@@ -701,14 +708,14 @@ function formatRateDate(iso: string, lang: Lang): string {
 function Header({ lang, onToggleLang }: { lang: Lang; onToggleLang: () => void }) {
   return (
     <header className="sticky top-0 z-10 border-b border-stone-200/60 bg-stone-50/80 backdrop-blur">
-      <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-2xl items-center justify-between px-3 py-2.5 sm:px-4 sm:py-3">
         <div>
-          <h1 className="text-lg font-bold leading-tight">{t(lang, 'appTitle')}</h1>
-          <p className="text-xs text-stone-500 leading-tight">{t(lang, 'appSubtitle')}</p>
+          <h1 className="text-base font-bold leading-tight sm:text-lg">{t(lang, 'appTitle')}</h1>
+          <p className="text-[11px] text-stone-500 leading-tight sm:text-xs">{t(lang, 'appSubtitle')}</p>
         </div>
         <button
           onClick={onToggleLang}
-          className="rounded-full border border-stone-300 bg-white px-3 py-1.5 text-sm font-medium text-stone-700 hover:border-stone-400 hover:bg-stone-100 transition"
+          className="rounded-full border border-stone-300 bg-white px-2.5 py-1 text-xs font-medium text-stone-700 hover:border-stone-400 hover:bg-stone-100 transition sm:px-3 sm:py-1.5 sm:text-sm"
           aria-label="Toggle language"
         >
           {t(lang, 'lang_toggle')}
@@ -720,18 +727,18 @@ function Header({ lang, onToggleLang }: { lang: Lang; onToggleLang: () => void }
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
+    <section className="rounded-2xl border border-stone-200 bg-white p-3 shadow-sm sm:p-4">
       {children}
     </section>
   );
 }
 
 function SectionLabel({ text }: { text: string }) {
-  return <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-500">{text}</h2>;
+  return <h2 className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-500 sm:mb-3 sm:text-xs sm:tracking-wider">{text}</h2>;
 }
 
 function PillGrid({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-wrap gap-2">{children}</div>;
+  return <div className="flex flex-wrap gap-1.5 sm:gap-2">{children}</div>;
 }
 
 /** Compact 2-segment toggle used to switch between AUD and THB on the goal. */
@@ -753,7 +760,7 @@ function CurrencyToggle({
           role="radio"
           aria-checked={value === c}
           className={
-            'rounded-md px-3 py-1 text-xs font-semibold transition ' +
+            'rounded-md px-2.5 py-1 text-[11px] font-semibold transition sm:px-3 sm:text-xs ' +
             (value === c
               ? 'bg-white text-emerald-700 shadow-sm'
               : 'text-stone-500 hover:text-stone-700')
@@ -782,13 +789,13 @@ function Pill({
       onClick={onClick}
       aria-pressed={selected}
       className={
-        'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ' +
+        'flex min-h-11 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-xs transition sm:px-3 sm:text-sm ' +
         (selected
           ? 'border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold'
           : 'border-stone-200 bg-white text-stone-700 hover:border-stone-300')
       }
     >
-      <span aria-hidden="true">{emoji}</span>
+      <span className="text-sm sm:text-base" aria-hidden="true">{emoji}</span>
       <span>{label}</span>
     </button>
   );
@@ -814,7 +821,7 @@ function MoneyInput({
   lang: Lang;
   ariaLabel: string;
   suffix?: string;
-  size?: 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg';
   allowDecimals?: boolean;
   placeholder?: string;
 }) {
@@ -891,7 +898,12 @@ function MoneyInput({
     });
   }
 
-  const padding = size === 'lg' ? 'px-3 py-3 text-xl' : 'px-3 py-2 text-base';
+  const padding =
+    size === 'lg'
+      ? 'px-3 py-3 text-xl'
+      : size === 'sm'
+        ? 'px-2 py-1.5 text-[13px] sm:px-3 sm:py-2 sm:text-base'
+        : 'px-3 py-2 text-base';
 
   return (
     <div className="flex items-center rounded-xl border border-stone-200 bg-white focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-100">
@@ -908,10 +920,10 @@ function MoneyInput({
         }}
         placeholder={placeholder}
         aria-label={ariaLabel}
-        className={`flex-1 bg-transparent ${padding} font-semibold tabular text-stone-900 placeholder:font-normal placeholder:text-stone-300 focus:outline-none`}
+        className={`min-w-0 flex-1 bg-transparent ${padding} font-semibold tabular text-stone-900 placeholder:font-normal placeholder:text-stone-300 focus:outline-none`}
       />
       {suffix && (
-        <span className="whitespace-nowrap px-3 text-sm text-stone-500">{suffix}</span>
+        <span className={`shrink-0 whitespace-nowrap px-2 text-stone-500 sm:px-3 ${size === 'sm' ? 'text-[10px] sm:text-sm' : 'text-sm'}`}>{suffix}</span>
       )}
     </div>
   );
@@ -932,10 +944,10 @@ function ResultCard({
 }) {
   if (!result.reachable) {
     return (
-      <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
-        <h2 className="text-lg font-bold text-amber-900">{t(lang, 'impossible_heading')}</h2>
+      <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
+        <h2 className="text-base font-bold text-amber-900 sm:text-lg">{t(lang, 'impossible_heading')}</h2>
         <p className="mt-2 text-sm text-amber-800 leading-relaxed">{t(lang, 'impossible_body')}</p>
-        <div className="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4 sm:gap-3">
           <Stat label={t(lang, 'result_gross')} value={`${formatMoney(result.monthlyGrossIncome, lang)}`} />
           <Stat label={t(lang, 'result_tax')} value={`−${formatMoney(result.monthlyTax, lang)}`} />
           <Stat label={t(lang, 'result_net')} value={`${formatMoney(result.monthlyNetIncome, lang)}`} />
@@ -951,12 +963,12 @@ function ResultCard({
   const savingsPct = Math.max(0, 100 - taxPct - expensesPct);
 
   return (
-    <section className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+    <section className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-4 shadow-sm sm:p-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-emerald-700 sm:text-xs sm:tracking-wider">
         {t(lang, 'result_heading')}
       </p>
 
-      <h2 className="mt-2 text-4xl sm:text-5xl font-bold leading-tight text-emerald-900 tabular">
+      <h2 className="mt-2 text-3xl font-bold leading-tight text-emerald-900 tabular sm:text-5xl">
         {result.monthsTotal === 0 ? (
           <span>{t(lang, 'months_zero')}</span>
         ) : (
@@ -972,21 +984,24 @@ function ResultCard({
       )}
 
       {/* Save per week — primary (matches paycheck cadence). Monthly shown as hint. */}
-      <div className="mt-5 rounded-xl bg-white border border-emerald-100 p-3">
+      <div className="mt-4 rounded-xl border border-emerald-100 bg-white p-3 sm:mt-5">
         <p className="text-xs text-stone-500">{t(lang, 'result_save_per_week')}</p>
-        <p className="mt-0.5 text-2xl font-bold tabular text-emerald-700">
+        <p className="mt-0.5 text-xl font-bold tabular text-emerald-700 sm:text-2xl">
           {formatMoney(result.weeklySavings, lang)}{' '}
-          <span className="text-sm font-normal text-stone-500">{t(lang, 'baht')}</span>
+          <span className="text-xs font-normal text-stone-500 sm:text-sm">{t(lang, 'baht')}</span>
         </p>
-        <p className="mt-1 text-[11px] text-stone-400 tabular">
-          ≈ {formatMoney(result.monthlySavings, lang)} {t(lang, 'baht')} {t(lang, 'result_per_month')}
-          {' · '}
-          {formatMoney(result.monthlySavings * thbPerAud, lang)} {t(lang, 'thb')} {t(lang, 'result_per_month')}
+        <p className="mt-1 text-[11px] leading-relaxed text-stone-400 tabular">
+          <span className="block sm:inline">
+            ≈ {formatMoney(result.monthlySavings, lang)} {t(lang, 'baht')} {t(lang, 'result_per_month')}
+          </span>
+          <span className="block sm:ml-1 sm:inline">
+            ≈ {formatMoney(result.monthlySavings * thbPerAud, lang)} {t(lang, 'thb')} {t(lang, 'result_per_month')}
+          </span>
         </p>
       </div>
 
       {/* Income breakdown bar: Tax | Expenses | Savings — WEEKLY amounts to match paycheck cycle */}
-      <div className="mt-5">
+      <div className="mt-4 sm:mt-5">
         <div className="flex h-9 overflow-hidden rounded-xl bg-stone-100 text-xs font-semibold text-white">
           <div
             className="bar-fill flex items-center justify-center bg-amber-500"
@@ -1010,10 +1025,25 @@ function ResultCard({
             {savingsPct >= 12 && <span className="px-2">{Math.round(savingsPct)}%</span>}
           </div>
         </div>
-        <div className="mt-2 grid grid-cols-3 gap-2 text-xs text-stone-600 tabular">
-          <LegendItem color="bg-amber-500" label={t(lang, 'result_tax')} value={`${formatMoney(result.weeklyTax, lang)} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`} />
-          <LegendItem color="bg-stone-400" label={t(lang, 'result_expenses')} value={`${formatMoney(result.weeklyExpenses, lang)} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`} />
-          <LegendItem color="bg-emerald-500" label={t(lang, 'result_savings')} value={`${formatMoney(result.weeklySavings, lang)} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`} />
+        <div className="mt-2 grid grid-cols-1 gap-2 text-xs text-stone-600 tabular sm:grid-cols-3">
+          <LegendItem
+            color="bg-amber-500"
+            label={t(lang, 'result_tax')}
+            value={`${formatMoney(result.weeklyTax, lang)} ${t(lang, 'baht')} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`}
+            subvalue={`${formatMoney(result.weeklyTax * thbPerAud, lang)} ${t(lang, 'thb')} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`}
+          />
+          <LegendItem
+            color="bg-stone-400"
+            label={t(lang, 'result_expenses')}
+            value={`${formatMoney(result.weeklyExpenses, lang)} ${t(lang, 'baht')} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`}
+            subvalue={`${formatMoney(result.weeklyExpenses * thbPerAud, lang)} ${t(lang, 'thb')} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`}
+          />
+          <LegendItem
+            color="bg-emerald-500"
+            label={t(lang, 'result_savings')}
+            value={`${formatMoney(result.weeklySavings, lang)} ${t(lang, 'baht')} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`}
+            subvalue={`${formatMoney(result.weeklySavings * thbPerAud, lang)} ${t(lang, 'thb')} / ${lang === 'th' ? 'สัปดาห์' : 'wk'}`}
+          />
         </div>
       </div>
 
@@ -1038,7 +1068,7 @@ function ResultCard({
       {/* Timeline */}
       <Timeline monthsTotal={result.monthsTotal} lang={lang} goalDate={result.goalDate} />
 
-      <p className="mt-4 text-center text-xs text-stone-500">
+      <p className="mt-4 text-center text-xs leading-relaxed text-stone-500">
         {t(lang, 'result_total_label')}:
         {' '}
         {formatMoney(result.monthlySavings, lang)} {t(lang, 'baht')} ×{' '}
@@ -1085,9 +1115,9 @@ function TaxBreakdownPanel({
   const band2RatePct = Math.round(WHV_TAX_RATE_BAND2 * 1000) / 10; // 32.5
 
   return (
-    <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50/40 p-3">
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wider text-amber-700">
+    <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50/40 p-3 sm:mt-5">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-700 sm:text-xs sm:tracking-wider">
           {t(lang, 'tax_breakdown_heading')}
         </p>
         <p className="text-xs text-stone-500">
@@ -1177,7 +1207,7 @@ function TaxBreakdownPanel({
         )}
         {/* Monthly tax — primary, since people budget month-to-month
             and this is what ties back to the main breakdown bar above. */}
-        <div className="flex items-baseline justify-between border-t border-amber-200 pt-2">
+        <div className="flex flex-col gap-1 border-t border-amber-200 pt-2 sm:flex-row sm:items-baseline sm:justify-between">
           <span className="text-sm font-semibold text-stone-700">{t(lang, 'tax_monthly_total')}</span>
           <span className="text-base font-bold tabular text-amber-800">
             {formatMoney(monthlyTax, lang)} {t(lang, 'baht')}
@@ -1313,8 +1343,8 @@ function SuperDaspPanel({
 }) {
   if (annualSuper <= 0) return null;
   return (
-    <div className="mt-5 rounded-xl border border-sky-200 bg-sky-50/50 p-3">
-      <p className="text-xs font-semibold uppercase tracking-wider text-sky-700">
+    <div className="mt-4 rounded-xl border border-sky-200 bg-sky-50/50 p-3 sm:mt-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-sky-700 sm:text-xs sm:tracking-wider">
         {t(lang, 'super_heading')}
       </p>
       <p className="mt-1 text-[11px] text-stone-600 leading-relaxed">
@@ -1323,20 +1353,20 @@ function SuperDaspPanel({
 
       {/* Equation: Super  −  DASP tax  =  Take home. Right-aligned tabular
           numbers, every value forced to a single line. */}
-      <dl className="mt-3 space-y-1 text-xs">
-        <div className="flex items-baseline justify-between gap-3">
+      <dl className="mt-3 space-y-2 text-xs">
+        <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
           <dt className="text-stone-600">{t(lang, 'super_accrued_label')}</dt>
           <dd className="whitespace-nowrap font-semibold tabular text-stone-800">
             +{formatMoney(annualSuper, lang)} {t(lang, 'baht')}
           </dd>
         </div>
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
           <dt className="text-stone-500">{t(lang, 'dasp_tax_label')}</dt>
           <dd className="whitespace-nowrap tabular text-stone-500">
             −{formatMoney(daspTax, lang)} {t(lang, 'baht')}
           </dd>
         </div>
-        <div className="flex items-baseline justify-between gap-3 border-t border-sky-200 pt-2">
+        <div className="flex flex-col gap-0.5 border-t border-sky-200 pt-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3">
           <dt className="text-sm font-semibold text-stone-700">{t(lang, 'dasp_net_label')}</dt>
           <dd className="whitespace-nowrap text-base font-bold tabular text-sky-700">
             {formatMoney(daspNet, lang)} {t(lang, 'baht')}
@@ -1367,7 +1397,7 @@ function BandRow({
   lang: Lang;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
       <span className="flex items-center gap-1.5 text-stone-600">
         <span className={'inline-block h-2 w-2 rounded-full ' + color} />
         <span className="tabular">
@@ -1381,14 +1411,31 @@ function BandRow({
   );
 }
 
-function LegendItem({ color, label, value }: { color: string; label: string; value: string }) {
+function LegendItem({
+  color,
+  label,
+  value,
+  subvalue,
+}: {
+  color: string;
+  label: string;
+  value: string;
+  subvalue?: string;
+}) {
   return (
-    <div>
+    <div className="rounded-lg bg-white/60 p-2 sm:bg-transparent sm:p-0">
       <div className="flex items-center gap-1.5">
         <span className={'inline-block h-2 w-2 rounded-full ' + color} />
         <span className="text-[11px] text-stone-500">{label}</span>
       </div>
-      <p className="font-semibold text-stone-700 tabular">{value}</p>
+      <p className="font-semibold text-stone-700 tabular">
+        {value}
+        {subvalue && (
+          <span className="ml-3 text-[11px] font-normal text-stone-400">
+            · {subvalue}
+          </span>
+        )}
+      </p>
     </div>
   );
 }
@@ -1397,7 +1444,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-lg bg-white/60 border border-amber-100 p-2">
       <p className="text-xs text-stone-500">{label}</p>
-      <p className="mt-0.5 font-semibold tabular text-stone-800">{value}</p>
+      <p className="mt-0.5 text-sm font-semibold tabular text-stone-800 sm:text-base">{value}</p>
     </div>
   );
 }
