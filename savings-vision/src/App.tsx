@@ -980,6 +980,8 @@ function ResultCard({
         </p>
         <p className="mt-1 text-[11px] text-stone-400 tabular">
           ≈ {formatMoney(result.monthlySavings, lang)} {t(lang, 'baht')} {t(lang, 'result_per_month')}
+          {' · '}
+          {formatMoney(result.monthlySavings * thbPerAud, lang)} {t(lang, 'thb')} {t(lang, 'result_per_month')}
         </p>
       </div>
 
