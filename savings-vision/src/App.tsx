@@ -97,7 +97,8 @@ function detectInitialLang(): Lang {
 }
 
 export default function App() {
-  const persisted = useMemo(loadPersisted, []);
+  const persisted = useMemo(() => loadPersisted(), []);
+  const cachedRate = useMemo(() => loadCachedRate(), []);
 
   const [lang, setLang] = useState<Lang>(detectInitialLang);
   const [jobId, setJobId] = useState<string>(persisted.jobId ?? JOBS[0].id);
@@ -118,7 +119,9 @@ export default function App() {
   const [remittanceCurrency, setRemittanceCurrency] = useState<Currency>(persisted.remittanceCurrency ?? 'AUD');
   const [goalAmount, setGoalAmount] = useState<number>(persisted.goalAmount ?? GOAL_DEFAULT);
   const [goalCurrency, setGoalCurrency] = useState<Currency>(persisted.goalCurrency ?? 'AUD');
-  const [thbPerAud, setThbPerAud] = useState<number>(persisted.thbPerAud ?? DEFAULT_THB_PER_AUD);
+  const [thbPerAud, setThbPerAud] = useState<number>(
+    cachedRate?.rate ?? persisted.thbPerAud ?? DEFAULT_THB_PER_AUD,
+  );
   const [scamBannerDismissed, setScamBannerDismissed] = useState<boolean>(persisted.scamBannerDismissed ?? false);
   const [startDateISO, setStartDateISO] = useState<string>(persisted.startDate ?? todayISODate());
 
@@ -128,20 +131,14 @@ export default function App() {
     | { source: 'manual' }
     | { source: 'default' };
   const [rateMeta, setRateMeta] = useState<RateMeta>(() => {
-    const cached = loadCachedRate();
-    if (cached) return { source: 'auto', date: cached.rateDate ?? cached.fetchedDate };
+    if (cachedRate) return { source: 'auto', date: cachedRate.rateDate ?? cachedRate.fetchedDate };
     return { source: 'default' };
   });
 
   // Auto-fetch the AUD→THB rate once per day. Cached in localStorage so we
   // don't refetch within the same day across reloads.
   useEffect(() => {
-    const cached = loadCachedRate();
-    if (cached && isToday(cached.fetchedDate)) {
-      // Today's rate is already in cache — sync state to it (overrides any
-      // stale Persisted thbPerAud that might be older).
-      if (cached.rate !== thbPerAud) setThbPerAud(cached.rate);
-      setRateMeta({ source: 'auto', date: cached.rateDate ?? cached.fetchedDate });
+    if (cachedRate && isToday(cachedRate.fetchedDate)) {
       return;
     }
     // Otherwise fetch fresh in the background.
@@ -525,7 +522,7 @@ export default function App() {
         </Card>
 
         {/* RESULT — always uses the AUD-equivalent goal so calculations are consistent */}
-        <ResultCard result={result} lang={lang} goalAmount={goalInAUD} />
+        <ResultCard result={result} lang={lang} goalAmount={goalInAUD} thbPerAud={safeRate} />
 
         <ResourcesPanel lang={lang} />
 
@@ -829,18 +826,8 @@ function MoneyInput({
 
   const [text, setText] = useState<string>(() => formatForDisplay(value));
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Re-sync text when the external value changes (e.g. picking a new job
-  // resets the wage, picking a lifestyle tier resets expenses, or the
-  // currency toggle converts the goal amount).
-  useEffect(() => {
-    const cleaned = text.replace(/[^\d.]/g, '');
-    const currentNum = cleaned === '' ? 0 : Number(cleaned);
-    if (currentNum !== value) {
-      setText(formatForDisplay(value));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, lang, allowDecimals]);
+  const [isFocused, setIsFocused] = useState(false);
+  const displayValue = formatForDisplay(value);
 
   /**
    * Format with commas on every keystroke, preserving cursor position by
@@ -912,8 +899,13 @@ function MoneyInput({
         ref={inputRef}
         type="text"
         inputMode={allowDecimals ? 'decimal' : 'numeric'}
-        value={text}
+        value={isFocused ? text : displayValue}
         onChange={handleChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => {
+          setIsFocused(false);
+          setText(formatForDisplay(value));
+        }}
         placeholder={placeholder}
         aria-label={ariaLabel}
         className={`flex-1 bg-transparent ${padding} font-semibold tabular text-stone-900 placeholder:font-normal placeholder:text-stone-300 focus:outline-none`}
@@ -931,10 +923,12 @@ function ResultCard({
   result,
   lang,
   goalAmount,
+  thbPerAud,
 }: {
   result: CalcResult;
   lang: Lang;
   goalAmount: number;
+  thbPerAud: number;
 }) {
   if (!result.reachable) {
     return (
@@ -1036,16 +1030,25 @@ function ResultCard({
         daspTax={result.daspTaxOnDeparture}
         daspNet={result.daspNetOnDeparture}
         lang={lang}
+        thbPerAud={thbPerAud}
       />
 
       {/* Timeline */}
       <Timeline monthsTotal={result.monthsTotal} lang={lang} goalDate={result.goalDate} />
 
       <p className="mt-4 text-center text-xs text-stone-500">
+        {t(lang, 'result_total_label')}:
+        {' '}
         {formatMoney(result.monthlySavings, lang)} {t(lang, 'baht')} ×{' '}
         {result.monthsTotal} {t(lang, 'result_months')} ={' '}
         <span className="font-semibold tabular text-stone-700">
           {formatMoney(goalAmount, lang)} {t(lang, 'baht')}
+        </span>
+      </p>
+      <p className="mt-1 text-center text-[11px] text-stone-400 tabular">
+        {t(lang, 'result_equivalent_thb')}:{' '}
+        <span className="font-semibold text-stone-600">
+          {formatMoney(goalAmount * thbPerAud, lang)} {t(lang, 'thb')}
         </span>
       </p>
     </section>
@@ -1231,7 +1234,7 @@ function Timeline({
   const now = new Date();
   const totalMs = goalDate.getTime() - now.getTime();
 
-  let allYears: number[] = [];
+  const allYears: number[] = [];
   if (totalMs > 0) {
     const startYear = now.getFullYear();
     const endYear = goalDate.getFullYear();
@@ -1297,12 +1300,14 @@ function SuperDaspPanel({
   daspTax,
   daspNet,
   lang,
+  thbPerAud,
 }: {
   weeklySuper: number;
   annualSuper: number;
   daspTax: number;
   daspNet: number;
   lang: Lang;
+  thbPerAud: number;
 }) {
   if (annualSuper <= 0) return null;
   return (
@@ -1338,6 +1343,9 @@ function SuperDaspPanel({
       </dl>
       <p className="mt-1.5 text-right text-[10px] text-stone-400 tabular">
         ≈ {formatMoney(weeklySuper, lang)} {t(lang, 'baht')} {t(lang, 'super_per_week')}
+      </p>
+      <p className="mt-1 text-right text-[11px] text-sky-700 tabular">
+        {t(lang, 'result_equivalent_thb')}: {formatMoney(daspNet * thbPerAud, lang)} {t(lang, 'thb')}
       </p>
     </div>
   );
