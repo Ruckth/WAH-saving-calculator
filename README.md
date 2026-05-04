@@ -6,6 +6,7 @@ hours, living costs, tax, super, DASP, and THB conversion.
 ## App
 
 - Source app: `savings-vision/`
+- Live app: [wah-saving-calculator.kungkritbebe.workers.dev](https://wah-saving-calculator.kungkritbebe.workers.dev/)
 - Runtime data: AUD→THB exchange rate from `frankfurter.dev`
 - Deployment target: Cloudflare Workers
 
