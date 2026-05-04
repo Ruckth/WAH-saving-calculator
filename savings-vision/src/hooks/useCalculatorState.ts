@@ -15,6 +15,7 @@ import { fetchAudToThb, isToday, loadCachedRate, saveCachedRate } from '../excha
 import {
   MAX_JOBS,
   STORAGE_KEY,
+  TIP_CREATOR_DOWNLOAD_NAME,
   TIP_CREATOR_URL,
   type JobPlan,
   type RateMeta,
@@ -311,8 +312,8 @@ export function useCalculatorState(): {
 
   function downloadTipQr() {
     const link = document.createElement('a');
-    link.href = TIP_CREATOR_URL;
-    link.download = 'promptpay-tip-qr.jpeg';
+    link.href = new URL(TIP_CREATOR_URL, window.location.origin).toString();
+    link.download = TIP_CREATOR_DOWNLOAD_NAME;
     link.rel = 'noopener noreferrer';
     document.body.appendChild(link);
     link.click();

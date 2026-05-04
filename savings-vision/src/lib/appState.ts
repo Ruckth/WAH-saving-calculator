@@ -13,7 +13,8 @@ import {
 
 export const STORAGE_KEY = 'savings-vision:v2';
 export const MAX_JOBS = 3;
-export const TIP_CREATOR_URL = 'https://6ef1uc7a62.ufs.sh/f/YuAp8ZPhEJz2JS6FsdqN4ZUqynLQS3MClrTz8RHuY5Vxje2D';
+export const TIP_CREATOR_URL = '/promptpay-tip-qr.jpeg';
+export const TIP_CREATOR_DOWNLOAD_NAME = 'promptpay-tip-qr.jpeg';
 
 export type JobPlan = {
   id: string;
